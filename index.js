@@ -64,11 +64,22 @@ async function run() {
             const result = await commentCollection.insertOne(comment)
             res.send(result)
         })
-        app.get('/comment/:ideaId', async(req,res) => {
-            const {ideaId} = req.params
-            const result = await commentCollection.find({ideaId}).toArray()
+        app.get('/comment/:ideaId', async (req, res) => {
+            const { ideaId } = req.params
+            const result = await commentCollection.find({ ideaId }).toArray()
             res.send(result)
         })
+        app.delete('/comment/:id', async(req,res) => {
+            const {id} = req.params
+            const result = await commentCollection.deleteOne({_id: new ObjectId(id)})
+            res.send(result)
+        })
+        app.get('/mycomment/:userId', async (req, res) => {
+            const { userId } = req.params
+            const result = await commentCollection.find({ userId }).toArray()
+            res.send(result)
+        })
+        
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
