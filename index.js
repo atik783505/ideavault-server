@@ -22,6 +22,7 @@ async function run() {
         await client.connect();
         const database = client.db('ideavaultdb')
         const ideas = database.collection('ideascollections')
+        const commentCollection = database.collection('comment')
 
         app.post('/ideas', async (req, res) => {
             const data = req.body
