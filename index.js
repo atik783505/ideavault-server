@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 const JWKS = createRemoteJWKSet(
-    new URL('http://localhost:3000/api/auth/jwks')
+    new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
 )
 
 const verifyToken = async (req, res, next) => {
@@ -63,6 +63,12 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
+        app.get("/ideas/featured", async(req,res) => {
+            const cursor = ideas.find().limit(6)
+            const result = await cursor.toArray()
+            res.send(result)
+
+        })
         app.get('/ideas/:id', verifyToken, async (req, res) => {
             const { id } = req.params
             const result = await ideas.findOne({ _id: new ObjectId(id) })
@@ -92,17 +98,17 @@ async function run() {
             const result = await commentCollection.insertOne(comment)
             res.send(result)
         })
-        app.get('/comment/:ideaId', async (req, res) => {
+        app.get('/comment/:ideaId',verifyToken, async (req, res) => {
             const { ideaId } = req.params
             const result = await commentCollection.find({ ideaId }).toArray()
             res.send(result)
         })
-        app.delete('/comment/:id', async (req, res) => {
+        app.delete('/comment/:id',verifyToken, async (req, res) => {
             const { id } = req.params
             const result = await commentCollection.deleteOne({ _id: new ObjectId(id) })
             res.send(result)
         })
-        app.patch('/comment/:id', async (req, res) => {
+        app.patch('/comment/:id',verifyToken, async (req, res) => {
             const { id } = req.params
             const updatedData = req.body
             const result = await commentCollection.updateOne(
